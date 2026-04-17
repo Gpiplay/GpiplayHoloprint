@@ -8,9 +8,9 @@
 <style>
 :root{
 --bg:#ffffff;
---card:#f5f5f5;
+--card:#f4f4f4;
 --text:#111;
---accent:#22c55e;
+--accent:#00bcd4;
 }
 
 body.dark{
@@ -19,12 +19,16 @@ body.dark{
 --text:#ffffff;
 }
 
+*{
+box-sizing:border-box;
+font-family:Arial, sans-serif;
+}
+
 body{
 margin:0;
-font-family:Arial, Helvetica, sans-serif;
 background:var(--bg);
 color:var(--text);
-transition:.25s;
+transition:.3s;
 }
 
 /* HEADER */
@@ -35,6 +39,7 @@ justify-content:space-between;
 align-items:center;
 padding:12px 20px;
 background:var(--card);
+box-shadow:0 0 10px rgba(0,0,0,.1);
 }
 
 .left{
@@ -55,18 +60,17 @@ height:35px;
 
 .skin{
 height:35px;
+border-radius:6px;
 }
 
-.plus{
-background:#3b82f6;
-color:white;
+.btn{
+padding:8px 14px;
 border:none;
-padding:6px 10px;
+background:var(--accent);
+color:white;
 border-radius:6px;
 cursor:pointer;
 }
-
-/* NAV */
 
 .nav{
 display:flex;
@@ -77,6 +81,7 @@ padding:10px 20px;
 .nav button{
 background:none;
 border:none;
+font-size:16px;
 cursor:pointer;
 color:var(--text);
 }
@@ -84,14 +89,15 @@ color:var(--text);
 /* SEARCH */
 
 .search{
-padding:0 20px;
+padding:15px;
 display:flex;
 gap:10px;
 }
 
-.search input,select{
+.search input{
+flex:1;
 padding:10px;
-border-radius:8px;
+border-radius:6px;
 border:1px solid #ccc;
 }
 
@@ -99,8 +105,8 @@ border:1px solid #ccc;
 
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-gap:18px;
+grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+gap:20px;
 padding:20px;
 }
 
@@ -108,10 +114,10 @@ padding:20px;
 
 .card{
 background:var(--card);
-border-radius:12px;
+border-radius:10px;
 overflow:hidden;
-transition:.25s;
-animation:fade .3s ease;
+transition:.3s;
+animation:fade .5s ease;
 }
 
 .card:hover{
@@ -130,76 +136,44 @@ padding:10px;
 }
 
 .badge{
-padding:3px 7px;
-border-radius:6px;
+padding:3px 8px;
+border-radius:4px;
 font-size:12px;
 }
 
-.free{background:#22c55e;color:white;}
-.premium{background:#ef4444;color:white;}
+.free{background:#2ecc71;color:white;}
+.premium{background:#e74c3c;color:white;}
 
 .lock{
 opacity:.5;
 pointer-events:none;
 }
 
-.btn{
-display:block;
-background:var(--accent);
-padding:8px;
-border-radius:8px;
-text-align:center;
-text-decoration:none;
-color:white;
-margin-top:6px;
+@keyframes fade{
+from{opacity:0;transform:translateY(10px)}
+to{opacity:1;transform:translateY(0)}
 }
 
 /* MEMBERSHIP */
 
-.popup{
-position:fixed;
-top:0;
-left:0;
-right:0;
-bottom:0;
-background:rgba(0,0,0,.8);
-display:none;
-align-items:center;
-justify-content:center;
+.membership{
+padding:20px;
 }
 
-.popup-box{
+.pay-box{
 background:var(--card);
-padding:20px;
-border-radius:12px;
-width:300px;
+padding:15px;
+border-radius:10px;
+margin-top:15px;
 }
 
-/* ADMIN */
-
-.admin{
-padding:20px;
-}
-
-.admin input,
-.admin select{
-display:block;
-width:100%;
-margin-bottom:10px;
-padding:10px;
-border-radius:8px;
-border:1px solid #ccc;
-}
+/* FOOTER */
 
 footer{
-text-align:center;
 padding:20px;
+text-align:center;
 background:var(--card);
-}
-
-@keyframes fade{
-from{opacity:0;transform:translateY(10px)}
-to{opacity:1}
+margin-top:40px;
 }
 </style>
 </head>
@@ -215,216 +189,239 @@ to{opacity:1}
 <div class="right">
 <img src="skin.png" class="skin">
 <img src="logo.png" class="logo">
-
-<button class="plus" onclick="window.open('https://t.me/ivan_not_here')">+</button>
-
-<button onclick="toggleDark()">🌙</button>
-
+<button class="btn" onclick="window.open('https://t.me/ivan_not_here')">+</button>
+<button class="btn" onclick="toggleTheme()">🌙</button>
 <select onchange="setLang(this.value)">
 <option value="en">EN</option>
 <option value="mm">MM</option>
 <option value="ar">AR</option>
 <option value="ru">RU</option>
 </select>
-
 </div>
 
 </header>
 
 <div class="nav">
-<button onclick="show('home')">Home</button>
-<button onclick="show('premium')">Premium</button>
-<button onclick="show('admin')">Admin</button>
+<button onclick="showPage('home')">Home</button>
+<button onclick="showPage('premium')">Premium</button>
+<button onclick="showPage('free')">Free Builds</button>
+<button onclick="showPage('membership')">Membership</button>
+<button onclick="showPage('about')">About</button>
 </div>
 
 <div class="search">
-<input placeholder="Search..." id="search" oninput="render()">
-
-<select id="categoryFilter" onchange="render()">
-<option value="">All</option>
-<option>House</option>
-<option>Castle</option>
-<option>City</option>
-<option>Redstone</option>
-<option>Pixel Art</option>
-</select>
+<input placeholder="Search..." oninput="search(this.value)">
 </div>
 
 <div id="content"></div>
 
-<!-- MEMBERSHIP POPUP -->
-
-<div class="popup" id="pay">
-
-<div class="popup-box">
-
-<h3>Diamond Rank</h3>
-Unlock all premium builds
-
-<br><br>
-
-TON:
-<br>
-<code>UQD46rhikL1fakiDB30pqoaa4zn8tW8VVtlJD7_mla_dfx53</code>
-
-<br><br>
-
-WavePay / KPay:
-<br>
-09423687891
-
-<br><br>
-
-<button class="btn" onclick="paid()">I Paid</button>
-
-</div>
-
-</div>
-
 <footer>
-Gpiplay Holoprint — Minecraft Holoprint Library
+Gpiplay Holoprint — Minecraft Holoprint Library  
+<br>
+Telegram: @gpiplayholoprint
 </footer>
 
 <script>
 
-let member=localStorage.getItem("member")==="true"
+/* LANGUAGE */
 
-let builds=JSON.parse(localStorage.getItem("builds")||"[]")
+let lang="en"
 
-function toggleDark(){
+const text={
+en:{
+buy:"Buy Membership",
+paid:"I Paid",
+premium:"Premium",
+free:"Free"
+},
+mm:{
+buy:"အဖွဲ့ဝင် ဝယ်ယူရန်",
+paid:"ငွေပေးပြီး",
+premium:"ပရီမီယံ",
+free:"အခမဲ့"
+},
+ar:{
+buy:"شراء العضوية",
+paid:"دفعت",
+premium:"بريميوم",
+free:"مجاني"
+},
+ru:{
+buy:"Купить доступ",
+paid:"Я оплатил",
+premium:"Премиум",
+free:"Бесплатно"
+}
+}
+
+function setLang(l){
+lang=l
+render()
+}
+
+/* THEME */
+
+function toggleTheme(){
 document.body.classList.toggle("dark")
 }
 
-function setLang(){}
+/* MEMBERSHIP */
+
+let member=false
 
 function paid(){
 member=true
-localStorage.setItem("member",true)
-document.getElementById("pay").style.display="none"
+alert("Membership Activated")
 render()
 }
 
-let page="home"
+/* DATA */
 
-function show(p){
-page=p
-render()
+let builds=[
+{
+title:"Modern House",
+desc:"Cool survival house",
+img:"https://i.imgur.com/1.jpg",
+link:"#",
+type:"free"
+},
+{
+title:"Mega Castle",
+desc:"Huge castle build",
+img:"https://i.imgur.com/2.jpg",
+link:"#",
+type:"premium"
 }
+]
+
+/* RENDER */
 
 function render(){
 
-if(page==="admin"){
-content.innerHTML=`
-<div class="admin">
-<h3>Upload</h3>
+let html=""
 
-<input id="title" placeholder="Title">
-<input id="desc" placeholder="Description">
-
-<select id="type">
-<option value="free">Free</option>
-<option value="premium">Premium</option>
-</select>
-
-<select id="cat">
-<option>House</option>
-<option>Castle</option>
-<option>City</option>
-<option>Redstone</option>
-<option>Pixel Art</option>
-</select>
-
-<input type="file" id="img">
-<input type="file" id="file">
-
-<button class="btn" onclick="upload()">Post</button>
-</div>
-`
-return
+if(page=="home"){
+html+=grid(builds)
 }
 
-let html=`<div class="grid">`
-
-let q=search.value.toLowerCase()
-let cat=categoryFilter.value
-
-builds
-.filter(b=>b.title.toLowerCase().includes(q))
-.filter(b=>!cat || b.category===cat)
-.filter(b=>page==="premium"?b.type==="premium":true)
-.forEach((b,i)=>{
-
-let locked=b.type==="premium"&&!member
-
-html+=`
-<div class="card ${locked?"lock":""}">
-<img src="${b.img}">
-<div class="card-body">
-
-<span class="badge ${b.type}">
-${b.type}
-</span>
-
-<h4>${b.title}</h4>
-<p>${b.desc}</p>
-
-<small>${b.downloads||0} downloads</small>
-
-${locked
-? `<button class="btn" onclick="pay.style.display='flex'">Unlock</button>`
-: `<a class="btn" onclick="download(${i})">Download</a>`
+if(page=="free"){
+html+=grid(builds.filter(b=>b.type=="free"))
 }
+
+if(page=="premium"){
+html+=grid(builds.filter(b=>b.type=="premium"))
+}
+
+if(page=="membership"){
+html=`
+<div class="membership">
+
+<h2>Diamond Rank</h2>
+<p>5 TON or 25000 MMK</p>
+
+<div class="pay-box">
+
+TON Wallet:
+<br>
+<code>EQXXXXXXXXXXXX</code>
+<br><br>
+
+Wave Pay / KPay:
+<br>
+25000 MMK
+
+<br><br>
+
+<button class="btn" onclick="paid()">
+${text[lang].paid}
+</button>
 
 </div>
 </div>
 `
+}
 
-})
-
-html+=`</div>`
+if(page=="about"){
+html=`<div style="padding:20px">
+Gpiplay Holoprint Library  
+Download Minecraft Bedrock Holoprints  
+Free & Premium builds
+</div>`
+}
 
 content.innerHTML=html
 }
 
-function download(i){
-builds[i].downloads=(builds[i].downloads||0)+1
-localStorage.setItem("builds",JSON.stringify(builds))
-window.open(builds[i].file)
+/* GRID */
+
+function grid(list){
+return `
+<div class="grid">
+${list.map(card).join("")}
+</div>
+`
+}
+
+function card(b){
+
+let locked=b.type=="premium" && !member
+
+return `
+<div class="card ${locked?"lock":""}">
+
+<img src="${b.img}">
+
+<div class="card-body">
+
+<h3>${b.title}</h3>
+<p>${b.desc}</p>
+
+<span class="badge ${b.type}">
+${text[lang][b.type]}
+</span>
+
+<br><br>
+
+${locked ?
+`<button class="btn" onclick="showPage('membership')">🔒</button>`
+:
+`<a href="${b.link}">
+<button class="btn">Download</button>
+</a>`
+}
+
+</div>
+</div>
+`
+}
+
+/* NAV */
+
+let page="home"
+
+function showPage(p){
+page=p
 render()
 }
 
-function upload(){
+/* SEARCH */
 
-let t=title.value
-let d=desc.value
-let type=document.getElementById("type").value
-let cat=document.getElementById("cat").value
-
-let r1=new FileReader()
-let r2=new FileReader()
-
-r1.onload=e=>{
-r2.onload=f=>{
-
-builds.unshift({
-title:t,
-desc:d,
-type,
-category:cat,
-img:e.target.result,
-file:f.target.result,
-downloads:0
-})
-
-localStorage.setItem("builds",JSON.stringify(builds))
-show("home")
-
+function search(q){
+q=q.toLowerCase()
+renderCustom(
+builds.filter(b=>b.title.toLowerCase().includes(q))
+)
 }
 
-r2.readAsDataURL(file.files[0])
+function renderCustom(list){
+content.innerHTML=grid(list)
 }
 
-r1.readAsDataURL(img.files[0])
+/* ADMIN ADD */
+
+function addBuild(title,desc,img,link,type){
+builds.unshift({title,desc,img,link,type})
+render()
 }
 
 render()
